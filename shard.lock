@@ -1,5 +1,9 @@
 version: 2.0
 shards:
+  grits:
+    git: https://gitlab.com/skinnyjames/grits.git
+    version: 0.1.0+git.commit.336c9e8dc86d544dae40a5774dcf39b0573ab96a
+
   molinillo:
     git: https://github.com/crystal-lang/crystal-molinillo.git
     version: 0.2.0
