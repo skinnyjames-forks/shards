@@ -3,6 +3,7 @@ require "./resolver"
 require "../versions"
 require "../logger"
 require "../helpers"
+require "grits"
 
 module Shards
   abstract struct GitRef < Ref
@@ -317,13 +318,19 @@ module Shards
       # This configuration can be overridden by defining the environment
       # variable `GIT_ASKPASS`.
       git_retry(err: "Failed to clone #{git_url}") do
-        run_in_folder "git clone -c core.askPass=true -c init.templateDir= --mirror --quiet -- #{Process.quote(git_url)} #{Process.quote(local_path)}"
+        Grits::Repo.clone_mirror(git_url, local_path) {}
+        # run_in_folder "git clone -c core.askPass=true -c init.templateDir= --mirror --quiet -- #{Process.quote(git_url)} #{Process.quote(local_path)}"
       end
     end
 
     private def fetch_repository
       git_retry(err: "Failed to update #{git_url}") do
-        run "git fetch --all --quiet"
+        Grits::Repo.open(local_path) do |repo|
+          repo.remotes do |remotes|
+            remotes.each &.fetch
+          end
+        end
+        #run "git fetch --all --quiet"
       end
     end
 
@@ -332,10 +339,10 @@ module Shards
       loop do
         yield
         break
-      rescue Error
+      rescue error : Grits::Error::Git
         retries += 1
         next if retries < 3
-        raise Error.new(err)
+        raise error
       end
     end
 

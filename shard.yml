@@ -5,6 +5,8 @@ authors:
   - Julien Portalier <julien@portalier.com>
 
 dependencies:
+  grits:
+    gitlab: skinnyjames/grits
   molinillo:
     github: crystal-lang/crystal-molinillo
 
